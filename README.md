@@ -50,21 +50,22 @@ usaddress uses [parserator](https://github.com/datamade/parserator), a library f
 
 ### Building & testing the code in this repo
 
-To build a development version of usaddress on your machine, run the following code in your command line:
+This is to build a development version of usaddress on your machine.
+First, install PDM as a project manager.
+Then, optionally, install [just](https://github.com/casey/just) as a command runner.
+I prefer to install both of these with homebrew: `brew install pdm just`
+
+Now, clone this repo and setup a dev environment.
   
   ```
   git clone https://github.com/datamade/usaddress.git  
   cd usaddress  
-  pip install -r requirements.txt  
-  python setup.py develop  
-  parserator train training/labeled.xml usaddress  
+  pdm install 
   ```  
 
-Then run the testing suite to confirm that everything is working properly:
-
-   ```
-   nosetests .
-   ```
+Then run various dev commands such as `just lint`, `just train`, `just test`, etc.
+If you didn't install just, take a look at the `justfile`
+and you can run the commands manually.
    
 Having trouble building the code? [Open an issue](https://github.com/datamade/usaddress/issues/new) and we'd be glad to help you troubleshoot.
 
