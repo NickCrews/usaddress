@@ -660,7 +660,7 @@ STREET_NAMES = {
 }
 
 
-@functools.cache
+@functools.lru_cache(maxsize=1)
 def _get_tagger():
     tagger = pycrfsuite.Tagger()
     try:
