@@ -25,12 +25,13 @@ train:
 
 # Build wheels and sdists to dist/
 build *ARGS:
-    rm usaddress/usaddr.crfsuite
+    rm usaddress/usaddr.crfsuite || true
     just train
     pdm build {{ARGS}}
 
 # Publish to GitHub Releases
 release-gh TAG:
+    just build
     git tag -a {{TAG}} -m "{{TAG}}" || true
     git push origin {{TAG}} || true
     gh release create {{TAG}} --title "{{TAG}}" --notes "Release {{TAG}}" --latest dist/*
