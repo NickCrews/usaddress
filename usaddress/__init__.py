@@ -671,7 +671,14 @@ except IOError:
     )
 
 
-def parse(address_string):
+def parse(address_string: str) -> list[tuple[str, str]]:
+    """Split an address string into components, and label each component.
+
+    Examples
+    --------
+    >>> parse('123 Main St. Suite 100 Chicago, IL')
+    [('123', 'AddressNumber'), ('Main', 'StreetName'), ('St.', 'StreetNamePostType'), ('Suite', 'OccupancyType'), ('100', 'OccupancyIdentifier'), ('Chicago,', 'PlaceName'), ('IL', 'StateName')]
+    """
     tokens = tokenize(address_string)
 
     if not tokens:
@@ -683,7 +690,19 @@ def parse(address_string):
     return list(zip(tokens, tags))
 
 
-def tag(address_string, tag_mapping=None):
+def tag(
+    address_string: str, tag_mapping: Mapping[str, str] | None = None
+) -> tuple[dict[str, str], str]:
+    """Parse an address, merge consecutive components, and tag the address type.
+
+    Examples
+    --------
+    >>> labels, kind = tag('123 Main St. Suite 100 Chicago, IL')
+    >>> kind
+    'Street Address'
+    >>> labels
+    {'AddressNumber': '123', 'StreetName': 'Main', 'StreetNamePostType': 'St.', 'OccupancyType': 'Suite', 'OccupancyIdentifier': '100', 'PlaceName': 'Chicago,', 'StateName': 'IL'}x
+    """
     tagged_address = {}
 
     last_label = None
