@@ -1,18 +1,9 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
-from __future__ import print_function
-
 import os
 import re
 import string
-from builtins import str, zip
-
-try:
-    from collections import OrderedDict
-except ImportError:
-    from ordereddict import OrderedDict
 import warnings
+from builtins import str, zip
+from collections.abc import Mapping
 
 import probableparsing
 import pycrfsuite
@@ -693,7 +684,7 @@ def parse(address_string):
 
 
 def tag(address_string, tag_mapping=None):
-    tagged_address = OrderedDict()
+    tagged_address = {}
 
     last_label = None
     is_intersection = False
