@@ -679,12 +679,12 @@ def parse(address_string: str) -> list[tuple[str, str]]:
     >>> parse('123 Main St. Suite 100 Chicago, IL')
     [('123', 'AddressNumber'), ('Main', 'StreetName'), ('St.', 'StreetNamePostType'), ('Suite', 'OccupancyType'), ('100', 'OccupancyIdentifier'), ('Chicago,', 'PlaceName'), ('IL', 'StateName')]
     """
-    tokens = tokenize(address_string)
+    tokens = _tokenize(address_string)
 
     if not tokens:
         return []
 
-    features = tokens2features(tokens)
+    features = _tokens2features(tokens)
 
     tags = TAGGER.tag(features)
     return list(zip(tokens, tags))
@@ -749,7 +749,7 @@ def tag(
     return tagged_address, address_type
 
 
-def tokenize(address_string):
+def _tokenize(address_string):
     if isinstance(address_string, bytes):
         address_string = str(address_string, encoding="utf-8")
     address_string = re.sub(r"(&#38;)|(&amp;)", "&", address_string)
@@ -770,7 +770,7 @@ def tokenize(address_string):
     return tokens
 
 
-def tokenFeatures(token):
+def _tokenFeatures(token):
     if token in ("&", "#", "½"):
         token_clean = token
     else:
@@ -779,10 +779,10 @@ def tokenFeatures(token):
     token_abbrev = re.sub(r"[.]", "", token_clean.lower())
     features = {
         "abbrev": token_clean[-1] == ".",
-        "digits": digits(token_clean),
+        "digits": _digits(token_clean),
         "word": (token_abbrev if not token_abbrev.isdigit() else False),
         "trailing.zeros": (
-            trailingZeros(token_abbrev) if token_abbrev.isdigit() else False
+            _trailingZeros(token_abbrev) if token_abbrev.isdigit() else False
         ),
         "length": (
             "d:" + str(len(token_abbrev))
@@ -800,12 +800,12 @@ def tokenFeatures(token):
     return features
 
 
-def tokens2features(address):
-    feature_sequence = [tokenFeatures(address[0])]
+def _tokens2features(address):
+    feature_sequence = [_tokenFeatures(address[0])]
     previous_features = feature_sequence[-1].copy()
 
     for token in address[1:]:
-        token_features = tokenFeatures(token)
+        token_features = _tokenFeatures(token)
         current_features = token_features.copy()
 
         feature_sequence[-1]["next"] = current_features
@@ -825,7 +825,7 @@ def tokens2features(address):
     return feature_sequence
 
 
-def digits(token):
+def _digits(token):
     if token.isdigit():
         return "all_digits"
     elif set(token) & set(string.digits):
@@ -834,7 +834,7 @@ def digits(token):
         return "no_digits"
 
 
-def trailingZeros(token):
+def _trailingZeros(token):
     results = re.findall(r"(0+)$", token)
     if results:
         return results[0]

@@ -1,13 +1,6 @@
-# -*- coding: utf-8 -*-
-from usaddress import tokenFeatures
-import unittest
+from usaddress import _tokenFeatures
 
 
-class TestTokenFeatures(unittest.TestCase):
-    def test_unicode(self):
-        features = tokenFeatures("å")
-        assert features["endsinpunc"] is False
-
-
-if __name__ == "__main__":
-    unittest.main()
+def test_unicode():
+    features = _tokenFeatures("å")
+    assert features["endsinpunc"] is False

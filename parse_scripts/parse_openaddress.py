@@ -1,6 +1,8 @@
 import json
+
 from lxml import etree
-from usaddress import tokenize
+
+from usaddress import _tokenize
 
 
 def json2trainingxml(infile, outfile, tagmapping):
@@ -30,7 +32,7 @@ def list2xml(addr_list, outfile):
         # handle commas?
         for component in addr:
             if component[1]:
-                for token in tokenize(component[1]):
+                for token in _tokenize(component[1]):
                     token_xml = etree.Element(component[0])
                     token_xml.text = token
                     token_xml.tail = " "
