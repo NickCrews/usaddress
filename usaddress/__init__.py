@@ -687,7 +687,7 @@ def parse(address_string: str) -> list[tuple[str, str]]:
     if not tokens:
         return []
 
-    features = _tokens2features(tokens)
+    features = tokens2features(tokens)
 
     tags = _get_tagger().tag(features)
     return list(zip(tokens, tags))
@@ -803,7 +803,8 @@ def _tokenFeatures(token):
     return features
 
 
-def _tokens2features(address):
+# must be named this for parserator to find it
+def tokens2features(address):
     feature_sequence = [_tokenFeatures(address[0])]
     previous_features = feature_sequence[-1].copy()
 
