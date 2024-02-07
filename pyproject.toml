@@ -37,7 +37,7 @@ build-backend = "pdm.backend"
 [tool.pdm.dev-dependencies]
 dev = [
     "coverage",
-    "nose",
+    "pytest",
     "requests",
     "ruff",
 ]
@@ -53,3 +53,9 @@ source-includes = [
     "training/",
 ]
 
+[tool.pytest.ini_options]
+filterwarnings = [
+    "error",
+    # parserator is unmaintained and has a lot of deprecation warnings
+    "ignore:the imp module is deprecated in favour of importlib:DeprecationWarning",
+]

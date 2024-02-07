@@ -1,65 +1,76 @@
 from __future__ import print_function
-from builtins import zip
-from builtins import object
-from usaddress import parse, GROUP_LABEL
+
+import pytest
 from parserator.training import readTrainingData
-import unittest
+
+from usaddress import GROUP_LABEL, parse
 
 
-class TestPerformance(object):  # for test generators, must inherit from object
+def load_data(xml_file: str) -> list[tuple[str, list[tuple[str, str]]]]:
+    return list(readTrainingData([xml_file], GROUP_LABEL))
+
+
+def parse_case(case):
+    address_text, components = case
+    labels_true = [label for token, label in components]
+    labels_pred = [label for token, label in parse(address_text)]
+    return address_text, labels_pred, labels_true
+
+
+def idfn(case: tuple[str, list[tuple[str, str]]]):
+    return case[0]
+
+
+@pytest.mark.parametrize(
+    "case",
+    load_data("measure_performance/test_data/simple_address_patterns.xml"),
+    ids=idfn,
+)
+def test_simple(case):
     # these are simple address patterns
-    def test_simple_addresses(self):
-        test_file = "measure_performance/test_data/simple_address_patterns.xml"
-        data = list(readTrainingData([test_file], GROUP_LABEL))
+    address_text, labels_pred, labels_true = parse_case(case)
+    assert_equals(address_text, labels_pred, labels_true)
 
-        for labeled_address in data:
-            address_text, components = labeled_address
-            _, labels_true = list(zip(*components))
-            _, labels_pred = list(zip(*parse(address_text)))
-            yield equals, address_text, labels_pred, labels_true
 
+@pytest.mark.parametrize(
+    "case",
+    load_data("measure_performance/test_data/labeled.xml"),
+    ids=idfn,
+)
+def test_all(case):
     # for making sure that performance isn't degrading
     # from now on, labeled examples of new address formats
     # should go both in training data & test data
-    def test_all(self):
-        test_file = "measure_performance/test_data/labeled.xml"
-        data = list(readTrainingData([test_file], GROUP_LABEL))
-
-        for labeled_address in data:
-            address_text, components = labeled_address
-            _, labels_true = list(zip(*components))
-            _, labels_pred = list(zip(*parse(address_text)))
-            yield equals, address_text, labels_pred, labels_true
+    address_text, labels_pred, labels_true = parse_case(case)
+    assert_equals(address_text, labels_pred, labels_true)
 
 
-class TestPerformanceOld(object):  # some old tests for usaddress
-    def test_synthetic_addresses(self):
-        test_file = "measure_performance/test_data/synthetic_osm_data.xml"
-        data = list(readTrainingData([test_file], GROUP_LABEL))
-
-        for labeled_address in data:
-            address_text, components = labeled_address
-            _, labels_true = list(zip(*components))
-            _, labels_pred = list(zip(*parse(address_text)))
-            yield equals, address_text, labels_pred, labels_true
-
-    def test_us50(self):
-        test_file = "measure_performance/test_data/us50_test_tagged.xml"
-        data = list(readTrainingData([test_file], GROUP_LABEL))
-
-        for labeled_address in data:
-            address_text, components = labeled_address
-            _, labels_true = list(zip(*components))
-            _, labels_pred = list(zip(*parse(address_text)))
-            yield fuzzyEquals, address_text, labels_pred, labels_true
+@pytest.mark.parametrize(
+    "case",
+    load_data("measure_performance/test_data/synthetic_osm_data.xml"),
+    ids=idfn,
+)
+def test_synthetic_addresses(case):
+    address_text, labels_pred, labels_true = parse_case(case)
+    assert_equals(address_text, labels_pred, labels_true)
 
 
-def equals(addr, labels_pred, labels_true):
+@pytest.mark.parametrize(
+    "case",
+    load_data("measure_performance/test_data/us50_test_tagged.xml"),
+    ids=idfn,
+)
+def test_us50(case):
+    address_text, labels_pred, labels_true = parse_case(case)
+    assert_almost_equals(address_text, labels_pred, labels_true)
+
+
+def assert_equals(addr, labels_pred, labels_true):
     prettyPrint(addr, labels_pred, labels_true)
     assert labels_pred == labels_true
 
 
-def fuzzyEquals(addr, labels_pred, labels_true):
+def assert_almost_equals(addr, labels_pred, labels_true):
     labels = []
     fuzzy_labels = []
     for label in labels_pred:
@@ -82,7 +93,3 @@ def prettyPrint(addr, predicted, true):
     print("ADDRESS:    ", addr)
     print("pred:       ", predicted)
     print("true:       ", true)
-
-
-if __name__ == "__main__":
-    unittest.main()

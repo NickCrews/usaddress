@@ -2,11 +2,11 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
-from builtins import zip
-from builtins import str
+
 import os
-import string
 import re
+import string
+from builtins import str, zip
 
 try:
     from collections import OrderedDict
@@ -14,8 +14,8 @@ except ImportError:
     from ordereddict import OrderedDict
 import warnings
 
-import pycrfsuite
 import probableparsing
+import pycrfsuite
 
 # The address components are based upon the `United States Thoroughfare,
 # Landmark, and Postal Address Data Standard
@@ -742,7 +742,7 @@ def tag(address_string, tag_mapping=None):
 def tokenize(address_string):
     if isinstance(address_string, bytes):
         address_string = str(address_string, encoding="utf-8")
-    address_string = re.sub("(&#38;)|(&amp;)", "&", address_string)
+    address_string = re.sub(r"(&#38;)|(&amp;)", "&", address_string)
     re_tokens = re.compile(
         r"""
     \(*\b[^\s,;#&()]+[.,;)\n]*   # ['ab. cd,ef '] -> ['ab.', 'cd,', 'ef']
@@ -780,7 +780,7 @@ def tokenFeatures(token):
             else "w:" + str(len(token_abbrev))
         ),
         "endsinpunc": (
-            token[-1] if bool(re.match(".+[^.\w]", token, flags=re.UNICODE)) else False
+            token[-1] if bool(re.match(r".+[^.\w]", token, flags=re.UNICODE)) else False
         ),
         "directional": token_abbrev in DIRECTIONS,
         "street_name": token_abbrev in STREET_NAMES,

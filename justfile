@@ -6,6 +6,10 @@ default:
 update:
     pdm update --update-all --dev
 
+# Test
+test *ARGS:
+    pdm run pytest {{ARGS}}
+
 # Lint
 lint:
     pdm run ruff check .
@@ -14,7 +18,6 @@ lint:
 fmt:
     pdm run ruff format
     pdm run ruff --fix .
-
 
 # Train the CRF model
 train:
