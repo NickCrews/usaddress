@@ -7,10 +7,9 @@ import unittest
 
 
 class TestPerformance(object):  # for test generators, must inherit from object
-
     # these are simple address patterns
     def test_simple_addresses(self):
-        test_file = 'measure_performance/test_data/simple_address_patterns.xml'
+        test_file = "measure_performance/test_data/simple_address_patterns.xml"
         data = list(readTrainingData([test_file], GROUP_LABEL))
 
         for labeled_address in data:
@@ -23,7 +22,7 @@ class TestPerformance(object):  # for test generators, must inherit from object
     # from now on, labeled examples of new address formats
     # should go both in training data & test data
     def test_all(self):
-        test_file = 'measure_performance/test_data/labeled.xml'
+        test_file = "measure_performance/test_data/labeled.xml"
         data = list(readTrainingData([test_file], GROUP_LABEL))
 
         for labeled_address in data:
@@ -34,9 +33,8 @@ class TestPerformance(object):  # for test generators, must inherit from object
 
 
 class TestPerformanceOld(object):  # some old tests for usaddress
-
     def test_synthetic_addresses(self):
-        test_file = 'measure_performance/test_data/synthetic_osm_data.xml'
+        test_file = "measure_performance/test_data/synthetic_osm_data.xml"
         data = list(readTrainingData([test_file], GROUP_LABEL))
 
         for labeled_address in data:
@@ -46,7 +44,7 @@ class TestPerformanceOld(object):  # some old tests for usaddress
             yield equals, address_text, labels_pred, labels_true
 
     def test_us50(self):
-        test_file = 'measure_performance/test_data/us50_test_tagged.xml'
+        test_file = "measure_performance/test_data/us50_test_tagged.xml"
         data = list(readTrainingData([test_file], GROUP_LABEL))
 
         for labeled_address in data:
@@ -56,25 +54,21 @@ class TestPerformanceOld(object):  # some old tests for usaddress
             yield fuzzyEquals, address_text, labels_pred, labels_true
 
 
-def equals(addr,
-           labels_pred,
-           labels_true):
+def equals(addr, labels_pred, labels_true):
     prettyPrint(addr, labels_pred, labels_true)
     assert labels_pred == labels_true
 
 
-def fuzzyEquals(addr,
-                labels_pred,
-                labels_true):
+def fuzzyEquals(addr, labels_pred, labels_true):
     labels = []
     fuzzy_labels = []
     for label in labels_pred:
-        if label.startswith('StreetName'):
-            fuzzy_labels.append('StreetName')
-        elif label.startswith('AddressNumber'):
-            fuzzy_labels.append('AddressNumber')
-        elif label == ('Null'):
-            fuzzy_labels.append('NotAddress')
+        if label.startswith("StreetName"):
+            fuzzy_labels.append("StreetName")
+        elif label.startswith("AddressNumber"):
+            fuzzy_labels.append("AddressNumber")
+        elif label == ("Null"):
+            fuzzy_labels.append("NotAddress")
         else:
             fuzzy_labels.append(label)
     for label in labels_true:

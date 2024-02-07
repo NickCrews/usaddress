@@ -8,7 +8,7 @@ update:
 
 # Lint
 lint:
-    pdm run ruff
+    pdm run ruff check .
 
 # Format
 fmt:
