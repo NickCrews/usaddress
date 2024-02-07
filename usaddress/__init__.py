@@ -1,7 +1,7 @@
+import functools
 import os
 import re
 import string
-import warnings
 from builtins import str, zip
 from collections.abc import Mapping
 
@@ -660,15 +660,18 @@ STREET_NAMES = {
 }
 
 
-try:
-    TAGGER = pycrfsuite.Tagger()
-    TAGGER.open(MODEL_PATH)
-except IOError:
-    warnings.warn(
-        "You must train the model (parserator train --trainfile "
-        "FILES) to create the %s file before you can use the parse "
-        "and tag methods" % MODEL_FILE
-    )
+@functools.cache
+def _get_tagger():
+    tagger = pycrfsuite.Tagger()
+    try:
+        tagger.open(MODEL_PATH)
+    except IOError as e:
+        raise IOError(
+            "You must train the model (parserator train --trainfile "
+            "FILES) to create the %s file before you can use the parse "
+            "and tag methods" % MODEL_FILE
+        ) from e
+    return tagger
 
 
 def parse(address_string: str) -> list[tuple[str, str]]:
@@ -686,7 +689,7 @@ def parse(address_string: str) -> list[tuple[str, str]]:
 
     features = _tokens2features(tokens)
 
-    tags = TAGGER.tag(features)
+    tags = _get_tagger().tag(features)
     return list(zip(tokens, tags))
 
 
